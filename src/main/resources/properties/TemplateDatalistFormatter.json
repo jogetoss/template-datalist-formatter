@@ -1,0 +1,43 @@
+[
+   {
+      "title":"@@org.joget.marketplace.TemplateDatalistFormatter.config@@",
+      "properties":[
+         {
+            "name" : "templatePreview",
+            "label" : "@@org.joget.marketplace.TemplateDatalistFormatter.preview@@",
+            "type" : "custom",
+            "script_url" : "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.marketplace.TemplateDatalistFormatter/service"
+         },
+         {
+            "name":"template",
+            "label":"@@org.joget.marketplace.TemplateDatalistFormatter.template@@",
+            "type":"codeeditor",
+            "mode":"html",
+            "value":""
+         },
+         {
+            "name":"css",
+            "label":"@@org.joget.marketplace.TemplateDatalistFormatter.css@@",
+            "type":"codeeditor",
+            "mode":"css",
+            "value":"",
+             "description":"@@org.joget.marketplace.TemplateDatalistFormatter.css.desc@@"
+         },
+         {
+            "name":"javascript",
+            "label":"@@org.joget.marketplace.TemplateDatalistFormatter.javascript@@",
+            "type":"codeeditor",
+            "mode":"javascript",
+            "value":"",
+            "description":"@@org.joget.marketplace.TemplateDatalistFormatter.javascript.desc@@"
+         },
+         {
+            "name":"customHeader",
+            "label":"@@org.joget.marketplace.TemplateDatalistFormatter.customHeader@@",
+            "type":"codeeditor",
+            "mode":"html",
+            "description":"@@org.joget.marketplace.TemplateDatalistFormatter.customHeader.desc@@"
+         }
+      ]
+   }
+]
