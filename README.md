@@ -1,6 +1,8 @@
 # Description
 
-This repository is meant to serve as a general template for how to set up new repositories in the JogetOSS organization. 
+**Plugin Template Pack** aims to factorize repetitive configurations of the same plugin throughout the same app in one place to ease design and maintenance. This repository is meant to serve as a general template for how to set up new repositories in the JogetOSS organization. 
+
+Read documentation at https://dev.joget.org/community/display/marketplace/Plugin+Template+Pack
 
 # Getting Help
 
