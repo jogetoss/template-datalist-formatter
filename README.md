@@ -1,8 +1,9 @@
 # Description
 
-**Plugin Template Pack** aims to factorize repetitive configurations of the same plugin throughout the same app in one place to ease design and maintenance. This repository is meant to serve as a general template for how to set up new repositories in the JogetOSS organization. 
+**Template Datalist Formatter** transforms normal tabular datalist row to use user defined template.
 
-Read documentation at https://dev.joget.org/community/display/marketplace/Plugin+Template+Pack
+![screenshot](https://user-images.githubusercontent.com/70784722/200311990-cde8e211-c7d8-4ae9-b14e-ee1051c15683.png)
+
 
 # Getting Help
 
