@@ -75,11 +75,12 @@
     insertFieldIntoTemplate: function(field){
         var thisObj = this;
         var editor = "#" + thisObj.editorId;
+        var columnId = $(field).attr("attr-id");
         var columnName = $(field).attr("attr-name");
         
         var templateEditorID = $(editor).find("div.property-editor-property[property-name='template']").find(".ace_editor").attr("id");
         templateEditor = ace.edit( templateEditorID );
-        templateEditor.session.insert(templateEditor.getCursorPosition(), "{" + columnName + "}");
+        templateEditor.session.insert(templateEditor.getCursorPosition(), "{" + columnId + "::" + columnName + "}");
     },
     throttle: function(f, delay){
         var timer = null;

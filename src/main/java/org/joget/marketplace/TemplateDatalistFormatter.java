@@ -33,7 +33,7 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
 
     @Override
     public String getVersion() {
-        return "7.0.0";
+        return "7.0.1";
     }
 
     @Override
@@ -52,6 +52,20 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         String recordId = (String) DataListService.evaluateColumnValueFromRow(row, "id");
         String datalistId = dataList.getId();
         
+        boolean cacheEnabled = false;
+        if(getPropertyString("cacheEnabled") != null && getPropertyString("cacheEnabled").equals("true")){
+            cacheEnabled = true;
+        }
+        
+        boolean richContent = false;
+        if(getPropertyString("richContent") != null && getPropertyString("richContent").equals("true")){
+            richContent = true;
+        }
+        
+        //backward compatibilty, default to true
+        if(getPropertyString("richContent") == null){
+            richContent = true;
+        }
         
         String content = "";
         
@@ -82,56 +96,122 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
 
         }
         
-        //render template
-        Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_-]+)\\}");
         
+        if( cacheEnabled){
+            String cachedContent = TemplateDatalistCache.getCachedContent(datalistId + "-" + recordId);
+            if(cachedContent != null){
+                return content + cachedContent;
+            }
+        }
+        
+        //render template
         //template = StringUtil.stripHtmlRelaxed(template);
         if (/*template == null &&*/ getPropertyString("template") != null && !getPropertyString("template").isEmpty()) {
             template = AppUtil.processHashVariable(getPropertyString("template"), null, null, null);
+            
+            //support exact column matching
+            //use column id
+            Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_-]+)::([a-zA-Z0-9_-]+)\\}");
             Matcher descMatcher = pattern.matcher(template);
             while (descMatcher.find()) {
                 String columnId = descMatcher.group(1);
-                //template = template.replace("{" + columnId + "}", (String) DataListService.evaluateColumnValueFromRow(row, columnId));
-                template = template.replace("{" + columnId + "}", getBinderFormattedValue(dataList, row, columnId)); //limitation, it will pick up first column with same column name, if there are multiple columns with same column name, it will not handle properly
+                String columnName = descMatcher.group(2);
+                //if(!columnId.isEmpty()){
+                    //use column id
+                    String temp[] = columnId.split("::");
+                    columnId = temp[0];
+                    template = template.replace("{" + columnId + "::" + columnName + "}", getBinderFormattedValue(dataList, row, columnId, columnName));
+            }
+            
+            //for backward compatibility
+            //use column name
+            Pattern pattern2 = Pattern.compile("\\{([a-zA-Z0-9_-]+)\\}");
+            Matcher descMatcher2 = pattern2.matcher(template);
+            while (descMatcher2.find()) {
+                String columnName = descMatcher2.group(1);
+                    //use column name
+                    //limitation, it will pick up first column with same column name, if there are multiple columns with same column name, it will not handle properly
+                    template = template.replace("{" + columnName + "}", getBinderFormattedValue(dataList, row, null, columnName));
             }
         }
         
         //content += template;
-
-        /* Generate the card body*/
-        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-        Map model = new HashMap();
-        model.put("element", this);
-        model.put("recordId", recordId);
-        model.put("template", template);
         
-        content += pluginManager.getPluginFreeMarkerTemplate(model, getClass().getName(), "/templates/TemplateDatalistFormatter.ftl", null);
+        if(richContent){
+            /* Generate the card body*/
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            Map model = new HashMap();
+            model.put("element", this);
+            model.put("recordId", recordId);
+            model.put("template", template);
+            
+            content += pluginManager.getPluginFreeMarkerTemplate(model, getClass().getName(), "/templates/TemplateDatalistFormatter.ftl", null);
+        }else{
+            content += template;
+        }
+        
+        
+
+        if(cacheEnabled){
+            TemplateDatalistCache.setCachedContent(datalistId + "-" + recordId, content);
+        }
         
         return content;
     }
     
-    protected String getBinderFormattedValue(DataList dataList, Object row, String name){
+    protected String getBinderFormattedValue(DataList dataList, Object row, String columnId, String columnName){
+        //when loaded fresh from list builder, return empty string
+        if(dataList.getColumns() == null){
+            return "";
+        }
+        
+        String value = DataListService.evaluateColumnValueFromRow(row, columnName).toString();
+        
         DataListColumn[] columns = dataList.getColumns();
-        for (DataListColumn c : columns) {
-            if(c.getName().equalsIgnoreCase(name)){
-                String value;
-                try{
-                    value = DataListService.evaluateColumnValueFromRow(row, name).toString();
-                    Collection<DataListColumnFormat> formats = c.getFormats();
-                    if (formats != null) {
-                        for (DataListColumnFormat f : formats) {
-                            if (f != null) {
-                                value = f.format(dataList, c, row, value);
-                                return value;
-                            }else{
-                                return value;
-                            }
-                        }
-                    }else{
-                        return value;
-                    }
-                }catch(Exception ex){
+        if(columnId != null){
+            for (DataListColumn c : columns) {
+                if(c.getProperty("id").equals(columnId)){
+                    try{
 
+                        Collection<DataListColumnFormat> formats = c.getFormats();
+                        if (formats != null) {
+                            for (DataListColumnFormat f : formats) {
+                                if (f != null) {
+                                    value = f.format(dataList, c, row, value);
+                                    return value;
+                                }else{
+                                    return value;
+                                }
+                            }
+                        }else{
+                            return value;
+                        }
+                    }catch(Exception ex){
+
+                    }
+                }
+            }
+        }else{
+            for (DataListColumn c : columns) {
+                if(c.getName().equals(columnName)){
+                    try{
+
+                        Collection<DataListColumnFormat> formats = c.getFormats();
+                        if (formats != null) {
+                            for (DataListColumnFormat f : formats) {
+                                if (f != null) {
+                                    value = f.format(dataList, c, row, value);
+                                    return value;
+                                }else{
+                                    return value;
+                                }
+                            }
+                        }else{
+                            return value;
+                        }
+                    }catch(Exception ex){
+
+                    }
                 }
             }
         }

@@ -16,12 +16,25 @@
             "value":""
          },
          {
+            "name":"richContent",
+            "label":"@@org.joget.marketplace.TemplateDatalistFormatter.richContent@@",
+            "type" : "checkbox",
+            "options" : [{
+                "value" : "true",
+                "label" : ""
+            }],
+            "value" : "true"
+         },
+         {
             "name":"css",
             "label":"@@org.joget.marketplace.TemplateDatalistFormatter.css@@",
             "type":"codeeditor",
             "mode":"css",
             "value":"",
-             "description":"@@org.joget.marketplace.TemplateDatalistFormatter.css.desc@@"
+            "description":"@@org.joget.marketplace.TemplateDatalistFormatter.css.desc@@",
+            "control_field": "richContent",
+            "control_value": "true",
+            "control_use_regex": "false"
          },
          {
             "name":"javascript",
@@ -29,15 +42,33 @@
             "type":"codeeditor",
             "mode":"javascript",
             "value":"",
-            "description":"@@org.joget.marketplace.TemplateDatalistFormatter.javascript.desc@@"
+            "description":"@@org.joget.marketplace.TemplateDatalistFormatter.javascript.desc@@",
+            "control_field": "richContent",
+            "control_value": "true",
+            "control_use_regex": "false"
          },
          {
             "name":"customHeader",
             "label":"@@org.joget.marketplace.TemplateDatalistFormatter.customHeader@@",
             "type":"codeeditor",
             "mode":"html",
-            "description":"@@org.joget.marketplace.TemplateDatalistFormatter.customHeader.desc@@"
-         }
+            "description":"@@org.joget.marketplace.TemplateDatalistFormatter.customHeader.desc@@",
+            "control_field": "richContent",
+            "control_value": "true",
+            "control_use_regex": "false"
+         },
+         {
+             "name":"cacheEnabled",
+             "label":"@@org.joget.marketplace.TemplateDatalistFormatter.cacheEnabled@@",
+             "type":"checkbox",
+             "options":[
+                {
+                   "value":"true",
+                   "label":""
+                }
+             ]
+          }
+         
       ]
    }
 ]
