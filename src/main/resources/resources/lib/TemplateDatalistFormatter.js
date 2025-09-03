@@ -72,7 +72,7 @@
           try {
             return ace.edit(aceId).getValue();
           } catch (e) {
-            console.warn("Ace read failed for", propName, e);
+            // console.warn("Ace read failed for", propName, e);
           }
         }
 
@@ -82,7 +82,7 @@
           try {
             return cmEl.CodeMirror.getValue();
           } catch (e) {
-            console.warn("CodeMirror read failed for", propName, e);
+            // console.warn("CodeMirror read failed for", propName, e);
           }
         }
 
@@ -91,7 +91,7 @@
         if (ta) return ta.value;
 
         // Nothing found
-        console.warn("No editor found for property", propName);
+        // console.warn("No editor found for property", propName);
         return "";
       }
 
@@ -116,22 +116,21 @@
             return;
         }
 
-        // Try CodeMirror(DX9)
-            // Then try CodeMirror (DX9)
-            var cmElement = $(editor)
-                .find("div.property-editor-property[property-name='template']")
-                .find(".CodeMirror")
-                .get(0);
+    // Then try CodeMirror (DX9)
+    var cmElement = $(editor)
+      .find("div.property-editor-property[property-name='template']")
+      .find(".CodeMirror")
+      .get(0);
 
-            if (cmElement && cmElement.CodeMirror) {
-                var cm = cmElement.CodeMirror;
-                cm.replaceSelection("{" + columnId + "::" + columnName + "}");
-                cm.focus();
-                return;
-            }
+    if (cmElement && cmElement.CodeMirror) {
+      var cm = cmElement.CodeMirror;
+      cm.replaceSelection("{" + columnId + "::" + columnName + "}");
+      cm.focus();
+      return;
+    }
 
-            console.warn("No supported editor found for template field.");
-    },
+    // console.warn("No supported editor found for template field.");
+  },
     throttle: function(f, delay){
         var timer = null;
         return function(){
