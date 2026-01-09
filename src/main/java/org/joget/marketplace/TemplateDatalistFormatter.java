@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
@@ -15,13 +14,13 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormatDefault;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.plugin.base.PluginManager;
-import org.joget.workflow.util.WorkflowUtil;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.plugin.base.PluginWebSupport;
 
-public class TemplateDatalistFormatter extends DataListColumnFormatDefault implements PluginWebSupport {
+public class TemplateDatalistFormatter extends DataListColumnFormatDefault implements PluginWebSupport{
 
     //Support i18n
     private final static String MESSAGE_PATH = "messages/TemplateDatalistFormatter";
@@ -33,7 +32,7 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
 
     @Override
     public String getVersion() {
-        return "7.0.1";
+        return Activator.VERSION;
     }
 
     @Override
@@ -70,13 +69,13 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         String content = "";
         
         /* Add required stylesheet */
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null && request.getAttribute(getClassName()) == null) {
+        // HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        // if (request != null && request.getAttribute(getClassName()) == null) {
             //content += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/plugin/"+getClassName()+"/lib/w3-v4.css\" />\n";
             content += customHeader;
             content += "<style>" + css + "</style>";
             content += "<script>" + javascript + "</script>";
-            request.setAttribute(getClassName(), true);
+            // request.setAttribute(getClassName(), true);
             
             //cant manipulate datalist to hide other columns, commenting out code
 //            //set all other columns to hidden
@@ -94,10 +93,9 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
 //            }
 //            dataList.setColumns((DataListColumn[]) colsNew.toArray(new DataListColumn[colsNew.size()]));
 
-        }
+        // }
         
-        
-        if( cacheEnabled){
+        if(cacheEnabled){
             String cachedContent = TemplateDatalistCache.getCachedContent(datalistId + "-" + recordId);
             if(cachedContent != null){
                 return content + cachedContent;
@@ -234,6 +232,12 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
     }
     
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+        String script = AppUtil.readPluginResource(getClass().getName(), "/resources/lib/TemplateDatalistFormatter.js", null, false, MESSAGE_PATH);
+        response.getWriter().write(script);
+    }
+
+    public void webService(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws ServletException, IOException {
         PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
         String script = AppUtil.readPluginResource(getClass().getName(), "/resources/lib/TemplateDatalistFormatter.js", null, false, MESSAGE_PATH);
         response.getWriter().write(script);

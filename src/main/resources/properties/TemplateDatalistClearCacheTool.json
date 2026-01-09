@@ -1,0 +1,15 @@
+[
+   {
+      "title": "@@org.joget.marketplace.TemplateDatalistClearCacheTool.config@@",
+      "properties": [
+         {
+            "name": "listId",
+            "label": "@@org.joget.marketplace.TemplateDatalistClearCacheTool.listId@@",
+            "description": "@@org.joget.marketplace.TemplateDatalistClearCacheTool.listId.desc@@",
+            "type": "selectbox",
+            "required":"True",
+            "options_ajax": "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/datalist/options"
+         }
+      ]
+   }
+]

@@ -58,6 +58,11 @@
             "control_use_regex": "false"
          },
          {
+            "label": "@@org.joget.marketplace.TemplateDatalistFormatter.cacheEnabledHeader@@",
+            "description": "@@org.joget.marketplace.TemplateDatalistFormatter.cacheEnabledHeader.desc@@",
+            "type": "header"
+         },
+         {
              "name":"cacheEnabled",
              "label":"@@org.joget.marketplace.TemplateDatalistFormatter.cacheEnabled@@",
              "type":"checkbox",
