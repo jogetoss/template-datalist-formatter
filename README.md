@@ -2,7 +2,7 @@
 
 **Template Datalist Formatter** transforms normal tabular datalist row to use user defined template.
 
-![screenshot](https://user-images.githubusercontent.com/70784722/200311990-cde8e211-c7d8-4ae9-b14e-ee1051c15683.png)
+<img width="1484" height="784" alt="image" src="https://github.com/user-attachments/assets/59b9f867-c9c9-4482-9801-a98952bdc02b" />
 
 
 # Getting Help
