@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.plugin.base.PluginWebSupport;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class TemplateDatalistFormatter extends DataListColumnFormatDefault implements PluginWebSupport{
 
@@ -69,13 +70,13 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         String content = "";
         
         /* Add required stylesheet */
-        // HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        // if (request != null && request.getAttribute(getClassName()) == null) {
+         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+         if (request != null && request.getAttribute(getClassName()) == null) {
             //content += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/plugin/"+getClassName()+"/lib/w3-v4.css\" />\n";
             content += customHeader;
             content += "<style>" + css + "</style>";
             content += "<script>" + javascript + "</script>";
-            // request.setAttribute(getClassName(), true);
+            request.setAttribute(getClassName(), true);
             
             //cant manipulate datalist to hide other columns, commenting out code
 //            //set all other columns to hidden
@@ -93,7 +94,7 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
 //            }
 //            dataList.setColumns((DataListColumn[]) colsNew.toArray(new DataListColumn[colsNew.size()]));
 
-        // }
+        }
         
         if(cacheEnabled){
             String cachedContent = TemplateDatalistCache.getCachedContent(datalistId + "-" + recordId);
