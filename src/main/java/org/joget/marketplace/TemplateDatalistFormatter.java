@@ -67,45 +67,27 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
             richContent = true;
         }
         
-        String content = "";
+        String header = "";
         
-        /* Add required stylesheet */
+        /* Add required stylesheet, header, js*/
+        String uniqueColumnIdentifier = datalistId + column.getProperty("id") + getClassName(); //to support using multple same datalists in the same page, and load the style/script/header only once.
          HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-         if (request != null && request.getAttribute(getClassName()) == null) {
-            //content += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/plugin/"+getClassName()+"/lib/w3-v4.css\" />\n";
-            content += customHeader;
-            content += "<style>" + css + "</style>";
-            content += "<script>" + javascript + "</script>";
-            request.setAttribute(getClassName(), true);
-            
-            //cant manipulate datalist to hide other columns, commenting out code
-//            //set all other columns to hidden
-//            DataListColumn[] cols = dataList.getColumns();
-//            List<DataListColumn> colsNew = new ArrayList<DataListColumn>();
-//
-//            for(DataListColumn col : cols){
-//                if(!column.getProperty("id").toString().equalsIgnoreCase(col.getProperty("id").toString())){
-//                    col.setHidden(true);
-//                    col.setProperty("hidden", "true");
-//                    colsNew.add(col);
-//                }else{
-//                    colsNew.add(col);
-//                }
-//            }
-//            dataList.setColumns((DataListColumn[]) colsNew.toArray(new DataListColumn[colsNew.size()]));
-
+         if (request != null && request.getAttribute(uniqueColumnIdentifier) == null) {
+            header += customHeader;
+            header += "<style>" + css + "</style>";
+            header += "<script>" + javascript + "</script>";
+            request.setAttribute(uniqueColumnIdentifier, true);
         }
-        
+         
         if(cacheEnabled){
             String cachedContent = TemplateDatalistCache.getCachedContent(datalistId + "-" + recordId);
             if(cachedContent != null){
-                return content + cachedContent;
+                return header + cachedContent;
             }
         }
         
         //render template
-        //template = StringUtil.stripHtmlRelaxed(template);
-        if (/*template == null &&*/ getPropertyString("template") != null && !getPropertyString("template").isEmpty()) {
+        if ( getPropertyString("template") != null && !getPropertyString("template").isEmpty()) {
             template = AppUtil.processHashVariable(getPropertyString("template"), null, null, null);
             
             //support exact column matching
@@ -134,8 +116,7 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
             }
         }
         
-        //content += template;
-        
+        String content = "";
         if(richContent){
             /* Generate the card body*/
             PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
@@ -148,14 +129,14 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         }else{
             content += template;
         }
-        
-        
 
         if(cacheEnabled){
+            //add UTC timestamp to content
+            content += "<!-- Cached at " + java.time.Instant.now() + " -->";
             TemplateDatalistCache.setCachedContent(datalistId + "-" + recordId, content);
         }
         
-        return content;
+        return header + content;
     }
     
     protected String getBinderFormattedValue(DataList dataList, Object row, String columnId, String columnName){
