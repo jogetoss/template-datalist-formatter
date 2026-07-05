@@ -9,6 +9,35 @@
             "type": "selectbox",
             "required":"True",
             "options_ajax": "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/datalist/options"
+         },
+         {
+            "name":"formDefId",
+            "label":"@@org.joget.marketplace.TemplateDatalistClearCacheTool.formDefId@@",
+            "description":"@@org.joget.marketplace.TemplateDatalistClearCacheTool.formDefId.desc@@",
+            "type":"selectbox",
+            "options_ajax":"[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options"
+         },
+         {
+            "name":"field",
+            "label":"@@org.joget.marketplace.TemplateDatalistClearCacheTool.field@@",
+            "type":"selectbox",
+            "options_ajax_on_change":"formDefId",
+            "options_ajax":"[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "control_field":"formDefId",
+            "control_value":".+",
+            "control_use_regex":"true"
+         },
+         {
+            "name":"debugMode",
+            "label":"@@org.joget.marketplace.TemplateDatalistClearCacheTool.debugMode@@",
+            "description":"@@org.joget.marketplace.TemplateDatalistClearCacheTool.debugMode.desc@@",
+            "type":"checkbox",
+            "options":[
+               {
+                  "value":"true",
+                  "label":""
+               }
+            ]
          }
       ]
    }

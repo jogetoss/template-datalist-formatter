@@ -8,15 +8,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
-import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormatDefault;
 import org.joget.apps.datalist.service.DataListService;
-import org.joget.apps.form.model.FormRow;
-import org.joget.apps.form.model.FormRowSet;
-import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -83,8 +79,15 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
             request.setAttribute(uniqueColumnIdentifier, true);
         }
          
+        String storeFormDefId = getPropertyString("formDefId");
+        String storeField = getPropertyString("field");
+        boolean debugMode = "true".equals(getPropertyString("debugMode"));
+
         if(cacheEnabled){
-            String cachedContent = TemplateDatalistCache.getCachedContent(datalistId, recordId);
+            boolean fetchFromForm = "true".equals(getPropertyString("fetchFromFormData"));
+            String cachedContent = fetchFromForm
+                    ? TemplateDatalistCache.getCachedContent(datalistId, recordId, storeFormDefId, storeField, debugMode)
+                    : TemplateDatalistCache.getCachedContent(datalistId, recordId, null, null, debugMode);
             if(cachedContent != null){
                 return header + cachedContent;
             }
@@ -137,40 +140,20 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         if(cacheEnabled){
             //add UTC timestamp to content
             content += "<!-- Cached at " + java.time.Instant.now() + " -->";
-            TemplateDatalistCache.setCachedContent(datalistId, recordId, content);
+            TemplateDatalistCache.setCachedContent(datalistId, recordId, content, debugMode);
 
             //optionally persist the generated content to a form field on the same record
-            String storeFormDefId = getPropertyString("formDefId");
-            String storeField = getPropertyString("field");
             if (storeFormDefId != null && !storeFormDefId.isEmpty()
                     && storeField != null && !storeField.isEmpty()
                     && recordId != null && !recordId.isEmpty()) {
-                storeContentToForm(appDef, storeFormDefId, storeField, recordId, content);
+                TemplateDatalistCache.storeContentToForm(appDef, storeFormDefId, storeField, recordId, content, debugMode);
             }
         }
 
         return header + content;
     }
 
-    protected void storeContentToForm(AppDefinition appDef, String formDefId, String field, String recordId, String content) {
-        try {
-            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-            String appId = appDef.getAppId();
-            String appVersion = appDef.getVersion().toString();
 
-            FormRowSet rows = appService.loadFormData(appId, appVersion, formDefId, recordId);
-            FormRow row = (rows != null && !rows.isEmpty()) ? rows.get(0) : new FormRow();
-            row.setId(recordId);
-            row.setProperty(field, content);
-
-            FormRowSet toSave = new FormRowSet();
-            toSave.add(row);
-            appService.storeFormData(appId, appVersion, formDefId, toSave, recordId);
-        } catch (Exception e) {
-            LogUtil.error(getClassName(), e, "Failed to store generated content to form " + formDefId + " field " + field + " record " + recordId);
-        }
-    }
-    
     protected String getBinderFormattedValue(DataList dataList, Object row, String columnId, String columnName){
         //when loaded fresh from list builder, return empty string
         if(dataList.getColumns() == null){

@@ -73,7 +73,7 @@
                 }
              ]
           },
-         {
+          {
              "name":"formDefId",
              "label":"@@org.joget.marketplace.TemplateDatalistFormatter.storeFormId@@",
              "type":"selectbox",
@@ -83,7 +83,7 @@
              "control_value":"true",
              "control_use_regex":"false"
           },
-         {
+          {
              "name":"field",
              "label":"@@org.joget.marketplace.TemplateDatalistFormatter.storeField@@",
              "type":"selectbox",
@@ -92,8 +92,36 @@
              "control_field":"cacheEnabled",
              "control_value":"true",
              "control_use_regex":"false"
+          },
+          {
+             "name":"fetchFromFormData",
+             "label":"@@org.joget.marketplace.TemplateDatalistFormatter.fetchFromFormData@@",
+             "type":"checkbox",
+             "options":[
+                {
+                   "value":"true",
+                   "label":""
+                }
+             ],
+             "control_field":"field",
+             "control_value":".+",
+             "control_use_regex":"true"
+          },
+          {
+             "name":"debugMode",
+             "label":"@@org.joget.marketplace.TemplateDatalistFormatter.debugMode@@",
+             "description":"@@org.joget.marketplace.TemplateDatalistFormatter.debugMode.desc@@",
+             "type":"checkbox",
+             "options":[
+                {
+                   "value":"true",
+                   "label":""
+                }
+             ],
+             "control_field":"cacheEnabled",
+             "control_value":"true",
+             "control_use_regex":"false"
           }
-
       ]
    }
 ]
