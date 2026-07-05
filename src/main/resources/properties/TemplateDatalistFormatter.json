@@ -72,8 +72,28 @@
                    "label":""
                 }
              ]
+          },
+         {
+             "name":"formDefId",
+             "label":"@@org.joget.marketplace.TemplateDatalistFormatter.storeFormId@@",
+             "type":"selectbox",
+             "options_ajax":"[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options",
+             "description":"@@org.joget.marketplace.TemplateDatalistFormatter.storeFormId.desc@@",
+             "control_field":"cacheEnabled",
+             "control_value":"true",
+             "control_use_regex":"false"
+          },
+         {
+             "name":"field",
+             "label":"@@org.joget.marketplace.TemplateDatalistFormatter.storeField@@",
+             "type":"selectbox",
+             "options_ajax_on_change":"formDefId",
+             "options_ajax":"[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+             "control_field":"cacheEnabled",
+             "control_value":"true",
+             "control_use_regex":"false"
           }
-         
+
       ]
    }
 ]
