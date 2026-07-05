@@ -17,6 +17,7 @@ public class Activator implements BundleActivator {
         //Register plugin here
         registrationList.add(context.registerService(TemplateDatalistFormatter.class.getName(), new TemplateDatalistFormatter(), null));
         registrationList.add(context.registerService(TemplateDatalistClearCacheTool.class.getName(), new TemplateDatalistClearCacheTool(), null));
+        registrationList.add(context.registerService(TemplateDatalistFormatterUsageWrapper.class.getName(), new TemplateDatalistFormatterUsageWrapper(), null));
     }
 
     public void stop(BundleContext context) {
