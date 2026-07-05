@@ -80,7 +80,7 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         }
          
         if(cacheEnabled){
-            String cachedContent = TemplateDatalistCache.getCachedContent(datalistId + "-" + recordId);
+            String cachedContent = TemplateDatalistCache.getCachedContent(datalistId, recordId);
             if(cachedContent != null){
                 return header + cachedContent;
             }
@@ -133,7 +133,7 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         if(cacheEnabled){
             //add UTC timestamp to content
             content += "<!-- Cached at " + java.time.Instant.now() + " -->";
-            TemplateDatalistCache.setCachedContent(datalistId + "-" + recordId, content);
+            TemplateDatalistCache.setCachedContent(datalistId, recordId, content);
         }
         
         return header + content;
