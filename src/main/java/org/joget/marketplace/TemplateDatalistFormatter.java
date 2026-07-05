@@ -79,8 +79,15 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
             request.setAttribute(uniqueColumnIdentifier, true);
         }
          
+        String storeFormDefId = getPropertyString("formDefId");
+        String storeField = getPropertyString("field");
+        boolean debugMode = "true".equals(getPropertyString("debugMode"));
+
         if(cacheEnabled){
-            String cachedContent = TemplateDatalistCache.getCachedContent(datalistId + "-" + recordId);
+            boolean fetchFromForm = "true".equals(getPropertyString("fetchFromFormData"));
+            String cachedContent = fetchFromForm
+                    ? TemplateDatalistCache.getCachedContent(datalistId, recordId, storeFormDefId, storeField, debugMode)
+                    : TemplateDatalistCache.getCachedContent(datalistId, recordId, null, null, debugMode);
             if(cachedContent != null){
                 return header + cachedContent;
             }
@@ -133,12 +140,20 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
         if(cacheEnabled){
             //add UTC timestamp to content
             content += "<!-- Cached at " + java.time.Instant.now() + " -->";
-            TemplateDatalistCache.setCachedContent(datalistId + "-" + recordId, content);
+            TemplateDatalistCache.setCachedContent(datalistId, recordId, content, debugMode);
+
+            //optionally persist the generated content to a form field on the same record
+            if (storeFormDefId != null && !storeFormDefId.isEmpty()
+                    && storeField != null && !storeField.isEmpty()
+                    && recordId != null && !recordId.isEmpty()) {
+                TemplateDatalistCache.storeContentToForm(appDef, storeFormDefId, storeField, recordId, content, debugMode);
+            }
         }
-        
+
         return header + content;
     }
-    
+
+
     protected String getBinderFormattedValue(DataList dataList, Object row, String columnId, String columnName){
         //when loaded fresh from list builder, return empty string
         if(dataList.getColumns() == null){
