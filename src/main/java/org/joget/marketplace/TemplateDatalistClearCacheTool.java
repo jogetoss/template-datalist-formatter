@@ -43,8 +43,11 @@ public class TemplateDatalistClearCacheTool extends DefaultApplicationPlugin {
     public Object execute(Map map) {
         String datalistId = (String) map.get("listId");
         String recordId = (String) map.get("recordId");
+        String formDefId = (String) map.get("formDefId");
+        String field = (String) map.get("field");
+        boolean debugMode = "true".equals((String) map.get("debugMode"));
 
-        TemplateDatalistCache.clearCachedContent(datalistId + "-" + recordId);
+        TemplateDatalistCache.clearCachedContent(datalistId, recordId, formDefId, field, debugMode);
         return null;
     }
 }

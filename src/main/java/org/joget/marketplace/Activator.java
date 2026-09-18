@@ -8,7 +8,7 @@ import org.osgi.framework.ServiceRegistration;
 
 public class Activator implements BundleActivator {
 
-    public static final String VERSION = "9.0.0";
+    public static final String VERSION = "9.0.2";
     protected Collection<ServiceRegistration> registrationList;
 
     public void start(BundleContext context) {
@@ -17,6 +17,7 @@ public class Activator implements BundleActivator {
         //Register plugin here
         registrationList.add(context.registerService(TemplateDatalistFormatter.class.getName(), new TemplateDatalistFormatter(), null));
         registrationList.add(context.registerService(TemplateDatalistClearCacheTool.class.getName(), new TemplateDatalistClearCacheTool(), null));
+        registrationList.add(context.registerService(TemplateDatalistFormatterUsageWrapper.class.getName(), new TemplateDatalistFormatterUsageWrapper(), null));
     }
 
     public void stop(BundleContext context) {
