@@ -2,6 +2,8 @@
 
 **Template Datalist Formatter** transforms normal tabular datalist row to use user defined template.
 
+To setup and configure this plugin, please see the [documentation](https://kb.joget.org/jw/web/userview/jdocs/docs/marketplace/template-datalist-formatter).
+
 <img width="1484" height="784" alt="image" src="https://github.com/user-attachments/assets/59b9f867-c9c9-4482-9801-a98952bdc02b" />
 
 
