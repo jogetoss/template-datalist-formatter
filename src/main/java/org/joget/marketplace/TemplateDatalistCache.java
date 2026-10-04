@@ -14,7 +14,7 @@ import org.joget.commons.util.LogUtil;
 public class TemplateDatalistCache {
 
     public static final String CACHE_KEY_PREFIX = "TemplateDatalistFormatter";
-    
+
     public static void clearCachedContent(String datalistId, String recordId) {
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
         if (cache != null) {
@@ -62,7 +62,7 @@ public class TemplateDatalistCache {
             Long duration = 600L;
             String cacheKey = getCacheKey(datalistId, recordId);
 
-            if(isDx9){
+            if (isDx9) {
                 DynamicCacheElement element = new DynamicCacheElement(content, duration);
                 cache.put(cacheKey, element);
             } else {
@@ -70,6 +70,15 @@ public class TemplateDatalistCache {
                 cache.put(element);
             }
             debug(debugMode, "setCachedContent: " + cacheKey + ", duration " + duration + "s");
+
+            if (debugMode) {
+                try {
+                    boolean stored = hasCachedContent(datalistId, recordId);
+                    debug(debugMode, "setCachedContent: " + cacheKey + " verified in cache = " + stored);
+                } catch (Exception e) {
+                    LogUtil.error(TemplateDatalistCache.class.getName(), e, "setCachedContent: failed to verify " + cacheKey);
+                }
+            }
         }
     }
 
@@ -82,7 +91,7 @@ public class TemplateDatalistCache {
     }
 
     public static String getCachedContent(String datalistId, String recordId, String formDefId, String field, boolean debugMode) {
-        debug(debugMode, "getCachedContent: " + datalistId + "-" + recordId);
+        debug(debugMode, "getCachedContent: " + getCacheKey(datalistId, recordId));
 
         boolean isDx9 = false;
         try {
@@ -116,14 +125,20 @@ public class TemplateDatalistCache {
             }
         }
 
+        if (content == null) {
+            debug(debugMode, "getCachedContent: " + datalistId + "-" + recordId + " - cache miss");
+        }
+
         //optional fallback: fetch from stored form data when key is no longer in cache
         if (content == null && formDefId != null && !formDefId.isEmpty()
                 && field != null && !field.isEmpty()) {
             content = fetchContentFromForm(formDefId, field, recordId);
             if (content != null) {
                 //repopulate the cache so subsequent reads are served from memory
-                debug(debugMode, "getCachedContent: " + datalistId + "-" + recordId + " from form data");
+                debug(debugMode, "getCachedContent: " + datalistId + "-" + recordId + " - SOURCE: DATABASE (form " + formDefId + "." + field + ")");
                 setCachedContent(datalistId, recordId, content, debugMode);
+            } else {
+                debug(debugMode, "getCachedContent: " + datalistId + "-" + recordId + " - no content in form " + formDefId + "." + field);
             }
         }
 
@@ -151,9 +166,9 @@ public class TemplateDatalistCache {
     }
 
     public static void storeContentToForm(AppDefinition appDef, String formDefId, String field, String recordId, String content, boolean debugMode) {
-        if(content.length() == 0){
+        if (content.length() == 0) {
             debug(debugMode, "storeContentToForm: " + formDefId + "-" + field + " - " + recordId + " - clearing content");
-        }else{
+        } else {
             debug(debugMode, "storeContentToForm: " + formDefId + "-" + field + " - " + recordId + " - storing content of length " + content.length());
         }
 
@@ -186,7 +201,7 @@ public class TemplateDatalistCache {
         String cacheKey = getCacheKey(datalistId, recordId);
         if (isDx9) {
             javax.cache.Cache cache = (javax.cache.Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
-            return cache != null && cache.containsKey(cacheKey);
+            return cache != null && cache.get(cacheKey) != null;
         } else {
             Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
             return cache != null && cache.get(cacheKey) != null;
@@ -203,6 +218,6 @@ public class TemplateDatalistCache {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String appId = (appDef != null) ? appDef.getAppId() : "";
-        return CACHE_KEY_PREFIX + ":" + profile + ":" + appId + ":" + datalistId + ":" + recordId;
+        return "USERVIEW:" + profile + ":" + CACHE_KEY_PREFIX + ":" + appId + ":" + datalistId + ":" + recordId;
     }
 }

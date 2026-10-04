@@ -13,6 +13,7 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormatDefault;
 import org.joget.apps.datalist.service.DataListService;
+import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -92,6 +93,10 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
                 return header + cachedContent;
             }
         }
+
+        if(debugMode){
+            LogUtil.info(getClassName(), "format: " + datalistId + "-" + recordId + " - SOURCE: RENDERED (template processed)");
+        }
         
         //render template
         if ( getPropertyString("template") != null && !getPropertyString("template").isEmpty()) {
@@ -160,7 +165,8 @@ public class TemplateDatalistFormatter extends DataListColumnFormatDefault imple
             return "";
         }
         
-        String value = DataListService.evaluateColumnValueFromRow(row, columnName).toString();
+        Object rawValue = DataListService.evaluateColumnValueFromRow(row, columnName);
+        String value = (rawValue != null) ? rawValue.toString() : "";
         
         DataListColumn[] columns = dataList.getColumns();
         if(columnId != null){
